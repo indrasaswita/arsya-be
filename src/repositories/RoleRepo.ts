@@ -9,16 +9,13 @@ const getAllRoles: () => Promise<any> = () => new Promise((
 	postgres
 		.query(
 			'SELECT * FROM "role"',
-			[],
-			(result: any) => {
-				// kalo berhasil
-				resolve(result.rows)
-			},
-			(reason: any) => {
-				// kalo gagal
-				reject(reason)
-			}
-	)
+		)
+		.then((result: any) => {
+			resolve(result.rows)
+		})
+		.catch((reason: any) => {
+			reject(reason)
+		})
 })
 
 export default {

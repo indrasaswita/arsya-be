@@ -2,12 +2,14 @@
 import { Router } from 'express';
 import { getAllAduans } from './Aduans';
 import { getAllRoles } from './Roles';
-import { getAllUsers, addOneUser, updateOneUser, deleteOneUser } from './Users';
+import { getUserPelapor, addOneUser, updateOneUser, deleteOneUser, getUserLembaga } from './Users';
+import { getTest } from './Test';
 
 
 // User-route
 const userRouter = Router();
-userRouter.get('/all', getAllUsers);
+userRouter.get('/pelapor', getUserPelapor);
+userRouter.get('/lembaga', getUserLembaga);
 userRouter.post('/add', addOneUser);
 userRouter.put('/update', updateOneUser);
 userRouter.delete('/delete/:id', deleteOneUser);
@@ -20,10 +22,15 @@ aduanRouter.get('/all', getAllAduans);
 const roleRouter = Router();
 roleRouter.get('/all', getAllRoles);
 
+// Test Route
+const testRouter = Router();
+testRouter.get('/', getTest);
+
 
 // Export the base-router
 const baseRouter = Router();
 baseRouter.use('/users', userRouter);
 baseRouter.use('/aduan', aduanRouter);
 baseRouter.use('/roles', roleRouter);
+baseRouter.use('/test', testRouter)
 export default baseRouter;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import path from 'path';
@@ -13,12 +14,20 @@ import logger from '@shared/Logger';
 const app = express();
 const { BAD_REQUEST } = StatusCodes;
 
+//CORS middleware
+const allowCrossDomain = function(req: any, res: any, next: any) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
 
+    next();
+}
 
 /************************************************************************************
  *                              Set basic express settings
  ***********************************************************************************/
 
+app.use(allowCrossDomain);
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());

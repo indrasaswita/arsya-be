@@ -23,46 +23,40 @@ class Postgres {
 
 	public query = (
 		sql: string,
-		values: any[], 
-		whendone: CallbackReturnType | null = null, 
-		whenfailed: CallbackReturnType | null = null
-	) => {
-		if(this.pool != null) {
-			this.pool.connect((err, client, release) => {
-				if (err) {
-						if(whenfailed != null)
-							whenfailed(err)
-						else {
-							return console.error('Error acquiring client', err.stack)
-						}
-				}
+		values: any[] = [], 
+	) => 
+		new Promise((
+			resolve: (value: unknown) => void, 
+			reject: (reason?: any) => void,
+		) => {
+			if(this.pool != null) {
+				this.pool.connect((err, client, release) => {
+					if (err) {
+						// JIKA CONNECTION FAILED
+						reject(err)
+					}
 
-				client
-					.query(sql, values)
-					.then((result) => {
-						client.release()
-						// kalo berhasil
-						if(whendone != null) {
-							whendone(result)
-						}
-					})
-					.catch((err) => {
-						client.release()
-						if(whenfailed != null) {
-							whenfailed(err)
-						} else {
-							return console.error('Error executing query', err.stack)
-						}
-					})
-			})
-		} else {
-			if(whenfailed != null)
-				whenfailed("pool has not been set")
-			else
-				console.error("pool has not been set")
-		}
-	}
+					client
+						.query(sql, values)
+						.then((result) => {
+							// JIKA BERHASIL
+							resolve(result)
+						})
+						.catch((err) => {
+							// KALAU ERROR saat QUERY
+							reject(err)
+						})
+						.finally(() => {
+							// supaya ga kepenuhan, client harus di release
+							release()
+						})
+				})
+			} else {
+				// KALAU POOL TIDAK BERHASIL KE CREATE
+				reject("pool has not been set")
+			}
+		})
 
 }
 
-export default Postgres;
+export default Postgres
